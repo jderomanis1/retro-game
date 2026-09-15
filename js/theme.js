@@ -1,8 +1,15 @@
-/* Dewgrid U7a — HOTTUBTONY session unlock (memory only). */
+/* Dewgrid U8 — HOTTUBTONY unlock → SFX + cutscene (once) → enter run.
+ * Root cause (live Pages): assets already 200; UX gap was unlock only
+ * flipping status/badge with no cutscene/auto-start, so it felt like
+ * "nothing loaded". Collect-path cutscene also stole the moment from unlock.
+ */
 (function (w) {
   "use strict";
   var CODE = "HOTTUBTONY";
   var sessionUnlocked = false;
+  var introDone = false;
+  var startRunFn = null;
+  var entering = false;
 
   function matchCode(raw) {
     var v = String(raw == null ? "" : raw).trim();
@@ -25,12 +32,14 @@
     );
     nodes.forEach(function (el) {
       if (on) {
+        el.removeAttribute("hidden");
         el.hidden = false;
         el.classList.add("is-active");
         el.setAttribute("data-active", "true");
         el.textContent = CODE;
         el.setAttribute("aria-label", "Theme HOTTUBTONY active");
       } else {
+        el.setAttribute("hidden", "");
         el.hidden = true;
         el.classList.remove("is-active");
         el.removeAttribute("data-active");
@@ -41,7 +50,92 @@
   function setStatus(el, text, ok) {
     if (!el) return;
     el.textContent = text;
-    el.className = ok ? "is-ok" : "is-fail";
+    el.className = "theme-code-status " + (ok ? "is-ok" : "is-fail");
+    if (ok) el.classList.add("is-success-flash");
+  }
+
+  function playSuccessSfx() {
+    var s = w.Sfx;
+    if (!s) return;
+    try {
+      if (s.ensureCtx) s.ensureCtx();
+      if (s.unlock) { s.unlock(); return; }
+      if (s.wave) { s.wave(); return; }
+      if (s.sun) { s.sun(); return; }
+      if (s.beep) {
+        s.beep(523.25, 0.09, "triangle");
+        s.beep(783.99, 0.12, "triangle");
+      }
+    } catch (e) { /* ignore */ }
+  }
+
+  function flashSuccessGraphic(form) {
+    var badge = null;
+    if (form && form.closest) {
+      var screen = form.closest(".screen");
+      if (screen) badge = screen.querySelector(".theme-badge, #theme-badge");
+    }
+    if (!badge && w.document) badge = w.document.getElementById("theme-badge");
+    if (badge) {
+      badge.classList.add("theme-success-burst");
+      setTimeout(function () {
+        badge.classList.remove("theme-success-burst");
+      }, 900);
+    }
+    var burst = w.document && w.document.getElementById("theme-success-graphic");
+    if (burst) {
+      burst.hidden = false;
+      burst.classList.add("is-on");
+      burst.setAttribute("aria-hidden", "false");
+      setTimeout(function () {
+        burst.classList.remove("is-on");
+        burst.hidden = true;
+        burst.setAttribute("aria-hidden", "true");
+      }, 1100);
+    }
+  }
+
+  function resolveStartFn() {
+    if (typeof startRunFn === "function") return startRunFn;
+    if (typeof w.__dewStartThemeRun === "function") return w.__dewStartThemeRun;
+    if (w.GameFlow && typeof w.GameFlow.start === "function") {
+      return function () { w.GameFlow.start(); };
+    }
+    return null;
+  }
+
+  /* First unlock only: SFX + ≤2s ThemeCutscene, then start run. */
+  function afterUnlockIntro(startGameFn) {
+    var fn = startGameFn || resolveStartFn();
+    if (introDone) {
+      if (fn) fn();
+      return;
+    }
+    introDone = true;
+    playSuccessSfx();
+    if (entering) return;
+    entering = true;
+    function done() {
+      entering = false;
+      if (fn) fn();
+    }
+    if (w.ThemeCutscene && typeof w.ThemeCutscene.play === "function") {
+      var focusEl =
+        (w.document && w.document.getElementById("btn-theme-unlock")) ||
+        (w.document && w.document.activeElement) ||
+        null;
+      w.ThemeCutscene.play(focusEl, { onDone: done });
+      return;
+    }
+    done();
+  }
+
+  function setStartRun(fn) {
+    startRunFn = typeof fn === "function" ? fn : null;
+  }
+
+  function setOnUnlock(fn) {
+    setStartRun(fn);
   }
 
   function submitForm(form) {
@@ -53,6 +147,7 @@
     if (sessionUnlocked) {
       setStatus(status, "HOTTUBTONY is already on.", true);
       showBadge(true);
+      /* Prefer no cutscene/auto-start replay on re-submit. */
       return;
     }
     if (!matchCode(input.value)) {
@@ -62,7 +157,9 @@
     }
     unlock();
     setStatus(status, "HOTTUBTONY unlocked.", true);
+    flashSuccessGraphic(form);
     input.value = "";
+    afterUnlockIntro(resolveStartFn());
   }
 
   function bindForms() {
@@ -76,6 +173,7 @@
       });
       var btn = form.querySelector("#btn-theme-unlock, .btn-theme-unlock");
       if (btn) {
+        if (!btn.getAttribute("type")) btn.setAttribute("type", "submit");
         btn.addEventListener("click", function (e) {
           e.preventDefault();
           submitForm(form);
@@ -95,7 +193,10 @@
     showBadge(sessionUnlocked);
   }
 
-  function bind() {
+  function bind(opts) {
+    if (opts && typeof opts.onUnlockRun === "function") {
+      setStartRun(opts.onUnlockRun);
+    }
     bindForms();
   }
 
@@ -105,6 +206,9 @@
     unlock: unlock,
     isUnlocked: isUnlocked,
     showBadge: showBadge,
+    afterUnlockIntro: afterUnlockIntro,
+    setStartRun: setStartRun,
+    setOnUnlock: setOnUnlock,
     bindForms: bindForms,
     bind: bind
   };
