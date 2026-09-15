@@ -69,10 +69,11 @@
     <section id="howto" class="screen" aria-label="How to play" hidden>
       <div class="panel">
         <h1>How to Play</h1>
-        <p>Move with <strong>Arrow keys</strong> or <strong>WASD</strong>. On touch devices, use the pad.</p>
-        <p>Collect all <strong class="sap-label">sap-sparks</strong>. Grab a <strong class="sun-label">Sunburst</strong> to briefly reverse the chase.</p>
-        <p>Side tunnels wrap left ↔ right. Pause with <strong>P</strong> or Esc.</p>
-        <p>Theme codes unlock on the title screens.</p>
+        <p><strong>Move:</strong> Arrow keys, <strong>WASD</strong>, or the on-screen pad.</p>
+        <p>Collect <strong class="sap-label">sap-sparks</strong>; clear them all to advance waves.</p>
+        <p>Grab a <strong class="sun-label">Sunburst</strong> (or a hot-tub when a theme is active) to briefly reverse the chase.</p>
+        <p>Side tunnels wrap left ↔ right. Pause with <strong>P</strong> or <strong>Esc</strong>.</p>
+        <p>Theme codes can be entered on Attract / Title. When <strong>HOTTUBTONY</strong> is active, powers are hot tubs — unlocking plays the tub moment, then starts a run.</p>
         <ul class="enemy-list">
           <li><span class="swatch seek" aria-hidden="true"></span><span><b class="seek-label">Seek</b> - locks onto Dewnode’s last known cell.</span></li>
           <li><span class="swatch weave" aria-hidden="true"></span><span><b class="weave-label">Weave</b> - zigzags lanes, prefers turns.</span></li>
@@ -164,6 +165,10 @@
       </div>
     </div>
 
+    <div id="theme-success-graphic" class="theme-success-graphic" hidden aria-hidden="true">
+      <div class="theme-success-ring" aria-hidden="true"></div>
+      <p class="theme-success-label">HOTTUBTONY</p>
+    </div>
     <div id="cutscene" role="dialog" aria-modal="true" aria-label="Theme moment" aria-hidden="true" style="display: none">
       <div class="cutscene-stage">
         <canvas width="420" height="280" aria-hidden="true"></canvas>
