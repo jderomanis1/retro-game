@@ -4,6 +4,7 @@
   if (!S) return;
 
   window.Input.bind();
+  if (window.Theme && window.Theme.bind) window.Theme.bind();
   if (window.Scores) {
     window.Scores.bind();
     window.Scores.refresh();
@@ -90,8 +91,19 @@
     var paused = S.isPaused();
 
     if (screen === "attract" && (key === "Enter" || key === " ")) {
+      var tgt = ev.target;
+      if (tgt && (tgt.id === "theme-code" || tgt.id === "theme-code-title" ||
+          (tgt.classList && tgt.classList.contains("theme-code-input")) ||
+          (tgt.closest && tgt.closest(".theme-code-form")))) {
+        return;
+      }
       ev.preventDefault();
       goTo("title");
+      return;
+    }
+
+    if (window.ThemeCutscene && window.ThemeCutscene.isPlaying &&
+        window.ThemeCutscene.isPlaying()) {
       return;
     }
 

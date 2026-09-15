@@ -6,6 +6,16 @@
     dew: "#E7FFF4", tunnel: "#04110C", flee: "#7EE8C8"
   };
   var canvas, ctx, TILE, COLS, H;
+  var hotTubImg = null;
+  var hotTubTried = false;
+
+  function ensureHotTub() {
+    if (hotTubTried) return hotTubImg;
+    hotTubTried = true;
+    hotTubImg = new Image();
+    hotTubImg.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAFhElEQVR4nO2dv07dMBTGTdUJRhgZLlvhHfoAvEAXhjKwdqKqhMSIhFSJqSsDDDwDD9B3gG7cgZGOMKG2k6kxduI/5xwfJ99PQqK3CTfx9/nzSeIkxgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA7K603QIK/3z9+GFzg3Zfb2H+tfP006Taa3M6Niu0yIPwb/vzYtr+ufPv5K2+r9NK9AbIEd/HFdwTOWsb0bYguDVAsusUVNiJq6fK9maErA1QLb0y++P56iev0YoQuDEAifCO0G0G1AbKFHyrqcno7A1qNoNIApML7wAivUGeAavErqnkpNJlAjQGKxnnGal4CDUZQYQAR8f31agxAWGu0NkFzA3RV4TPVGi1N0MwAXQlvjEit0cIITQzQtfjMtYa0Cd5JfpkxMxA/Z7kA0u0jmgDdid8QqSQQSwCIn4dUe4kYAOKXIdFu4jUA0AW7AdD76+BuP1YDQHwaONuRzQAQnxau9kQNMHNYDIDezwNHuyIBZg65AdD7eaFuXyTAzCE1AHq/DJTt/J7qD2nmcXcrfSKHx9r1XfOpY5yQXQ3U0PtrhM5FgzEorhh2nQCSgo99twZDlNCdAUpE3zldFn/fzdEiaTl3u3oyA8kQIBH/KcKXCH1ztChebwwJI9QOA+oTYEj4mp5di//dIUPYbdecCGoTICZ8iehPD5vBz5dn//2/OHwOLrO6cZ/9fbF04DDC5BKgRviY0JaDi6uX38/395K2J/Y3h4xht9U3gsZEqE4Ayt4fEn9M+DHRLa74xhhz/Pvzm2ViKTDGWEqEEoHSBDUpoCYBfPGHhE8V3WLFd3v98Vn5rvtJ4m5PyAyhRHjc3brVkAQqEiBV/JyID/XwWhaHz2+SxJjwcBJLBT8NKExQkwDNDUAhfkgUC4UR7NAQSpLQZxYpE9QYoOnVwBTxnx42kyP/fH/v5cdSOq5TrB/bdn8/W57RbGaAVPHHiPVA+++DiyuzOHzOFrJknRiaTaBiPkCp+LmkChpbzjWV/XE/HyLFBC1oYgDX7VLiUxFLmhTGTNAiBVQkQA1ur3QJ9c5l4qHf2HKhWqNXxM8DcPb+oaOBGIvD52RjUPD0sPnm6GDndPlyZCB9fkDNiaAaQimQ0jvtWC9tAk1Maq9TIzlU5NnP5maE7muAVKywJ+uX0aHi4OLKnKxfvlp+6lQboPVjznJwe36saPSX087kLgevbtyzngM43997EXvovD6XCUrmF3AymyHAJVYrTOGwLpcmM4LGDgWN0X0yqJSUi0O5h4C1QwBJAnDUAdqishaO/aFo9yZDgOvyodm1UzHB0H7U9H4KVNQAYybo1Qhj2556zwEnZAbIjSPf7WON0ZsJcucJSo/9lqYJUGIC7UZI2UaOaWGlkD8qtmSKWM6EUB8NRws5pqQQn7LoVlED5CaBi+1x0slQ8r2aer6F5WHRpRNFS+4LSKEmJSiMRXlfAPUht6pTwWvXd9u+CWzj1RihVd0geYtYKWyPi6eeLm7RMI9uDC7hOU64qUoAF9tYsUQwRpcZhuoWTT3eh/WFEdz3DfpIGkL6+QBcl93Z3xhCfeu41ieEuFD3eM45FyKvjOF6gkjLO2p8uGKee8KN2hogBb/R5/aUMArEXhrV8jFyvT4nUGK6Hd4appTJvTXMmL4mkLZEsp3ErwXABMNM/s2hxsAEMWbz7mAX1AVtO0Tzy8FzT4PW+9/cAMa0b4RWaNjv5kOAzxyGBA3CW1QkgIumxuFA2/6pSwCXKaWBNuEtqg1g6dkIWoW3dGEAS09G0C68pSsDWDQboRfhLV0awEWDGXoT3aV7A/hIGKJnwX0mZ4AQNaaYktgAAAAAAAAAAAAAAAAAZsk/KDHl2wL1ecAAAAAASUVORK5CYII="; /* inline Legal-cleared hot-tub prop */
+    return hotTubImg;
+  }
 
   function init(el) {
     canvas = el; ctx = canvas.getContext("2d");
@@ -44,15 +54,21 @@
     sparks.forEach(function (s) {
       var cx = s.x * TILE + 8, cy = s.y * TILE + 8, i, a, r;
       if (s.kind === "sun") {
-        ctx.fillStyle = C.sun; ctx.beginPath();
-        for (i = 0; i < 8; i++) {
-          a = (i / 8) * Math.PI * 2 - Math.PI / 2;
-          r = i % 2 === 0 ? 8.5 : 4;
-          if (i === 0) ctx.moveTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
-          else ctx.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+        var themeOn = w.Theme && w.Theme.isUnlocked && w.Theme.isUnlocked();
+        var img = themeOn ? ensureHotTub() : null;
+        if (img && img.complete && img.naturalWidth) {
+          ctx.drawImage(img, cx - 8, cy - 8, 16, 16);
+        } else {
+          ctx.fillStyle = C.sun; ctx.beginPath();
+          for (i = 0; i < 8; i++) {
+            a = (i / 8) * Math.PI * 2 - Math.PI / 2;
+            r = i % 2 === 0 ? 8.5 : 4;
+            if (i === 0) ctx.moveTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+            else ctx.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+          }
+          ctx.closePath(); ctx.fill();
+          ctx.fillStyle = C.sap; ctx.beginPath(); ctx.arc(cx, cy, 2.2, 0, Math.PI * 2); ctx.fill();
         }
-        ctx.closePath(); ctx.fill();
-        ctx.fillStyle = C.sap; ctx.beginPath(); ctx.arc(cx, cy, 2.2, 0, Math.PI * 2); ctx.fill();
       } else {
         ctx.fillStyle = C.sap; ctx.beginPath();
         ctx.ellipse(cx, cy - 0.5, 2.2, 2.8, 0, 0, Math.PI * 2); ctx.fill();
