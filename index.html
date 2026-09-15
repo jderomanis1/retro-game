@@ -24,6 +24,7 @@
       <p class="tagline">Wet silicon · Dew as current</p>
       <p>A night botanic greenhouse grown over living copper-green circuitry</p>
       <button type="button" class="btn primary" data-go="title">Insert Curiosity</button>
+      <button type="button" class="btn" data-go="scores">High Scores</button>
 </section>
 
     <section id="title" class="screen" aria-label="Title" hidden>
@@ -36,6 +37,7 @@
         <div class="btn-row">
           <button type="button" class="btn" data-go="attract">Back</button>
           <button type="button" class="btn" data-go="howto">How to Play</button>
+          <button type="button" class="btn" data-go="scores">High Scores</button>
           <button type="button" class="btn primary" data-go="game" data-start>Enter Grid</button>
         </div>
       </div>
@@ -56,6 +58,18 @@
         <div class="btn-row">
           <button type="button" class="btn" data-go="title">Back</button>
           <button type="button" class="btn primary" data-go="game" data-start>Play</button>
+        </div>
+      </div>
+    </section>
+
+
+    <section id="scores" class="screen" aria-label="High scores" hidden>
+      <div class="panel">
+        <h1>High Scores</h1>
+        <p class="hs-forever">Scores stay forever in this browser (arcade cabinet style) until you clear site data for this site. No server. No expiry.</p>
+        <p class="hs-board" id="scores-board">No scores yet. Be the first.</p>
+        <div class="btn-row">
+          <button type="button" class="btn primary" data-go="title">Back</button>
         </div>
       </div>
     </section>
