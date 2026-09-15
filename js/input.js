@@ -1,4 +1,4 @@
-/* Dewgrid R8c — movement intent only (keys + touch pad). */
+/* Dewgrid R8d — movement intent (keys + touch); ignore key-repeat clobber. */
 (function (w) {
   var DIR = {
     ArrowUp: [0, -1], w: [0, -1], W: [0, -1],
@@ -29,6 +29,11 @@
     var pair = DIR[ev.key];
     if (!pair) return;
     if (!inGame() || hsFocused()) return;
+    /* Holding a direction re-fires keydown; that must not wipe a buffered turn. */
+    if (ev.repeat) {
+      ev.preventDefault();
+      return;
+    }
     setIntent(pair[0], pair[1]);
     ev.preventDefault();
   }
