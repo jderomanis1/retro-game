@@ -28,6 +28,7 @@
   function onKey(ev) {
     var pair = DIR[ev.key];
     if (!pair) return;
+    if (ev.repeat) return; /* hold-repeat must not wipe buffered turn */
     if (!inGame() || hsFocused()) return;
     setIntent(pair[0], pair[1]);
     ev.preventDefault();
