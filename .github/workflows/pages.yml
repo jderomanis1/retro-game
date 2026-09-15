@@ -23,13 +23,24 @@ jobs:
       - uses: actions/checkout@v4
       - name: Stage public site only
         run: |
-          mkdir -p _site
-          # prototype and game files staged later; keep workflow valid
-          if [ -f index.html ]; then cp index.html _site/; fi
-          if [ -d dist ]; then cp -r dist/* _site/; fi
-          if [ -d prototype ] && [ ! -f index.html ]; then cp -r prototype/* _site/; fi
-          # ensure non-empty artifact
-          if [ ! -f _site/index.html ]; then printf '%s\n' '<!DOCTYPE html><title>Dewgrid</title><p>Deploy pending</p>' > _site/index.html; fi
+          set -euo pipefail
+          rm -rf _site
+          mkdir -p _site/css _site/js
+          test -f index.html
+          test -d css
+          test -d js
+          cp index.html _site/
+          cp -r css/. _site/css/
+          cp -r js/. _site/js/
+          # Public allowlist only: index.html, css/**, js/** (optional js/vendor via js/**).
+          # Never stage prototype/, docs, shots, SPEC, Legal, STATE, or other paths.
+          test -f _site/index.html
+          test -f _site/css/tokens.css
+          test -f _site/js/main.js
+          if [ -e _site/prototype ] || [ -e _site/SPEC.md ] || [ -e _site/shots ]; then
+            echo "Refuse: non-public path leaked into _site" >&2
+            exit 1
+          fi
       - uses: actions/configure-pages@v5
         with:
           enablement: true
