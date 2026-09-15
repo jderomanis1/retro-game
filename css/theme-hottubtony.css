@@ -119,11 +119,11 @@
 }
 
 #theme-badge[data-active="true"],
-#theme-badge.is-active,
+#theme-badge.is-active:not([hidden]),
 .theme-badge[data-active="true"],
-.theme-badge.is-active,
+.theme-badge.is-active:not([hidden]),
 #hud-theme-badge[data-active="true"],
-#hud-theme-badge.is-active {
+#hud-theme-badge.is-active:not([hidden]) {
   display: inline-block;
 }
 
@@ -179,5 +179,81 @@
 @media (prefers-reduced-motion: reduce) {
   #cutscene {
     transition: none;
+  }
+}
+
+
+/* Unlock success flash + brief graphic (Legal: opaque HOTTUBTONY token only). */
+.theme-code-status.is-success-flash {
+  animation: theme-status-pop 700ms ease-out;
+}
+
+@keyframes theme-status-pop {
+  0% { transform: scale(0.96); opacity: 0.4; }
+  40% { transform: scale(1.04); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.theme-badge.theme-success-burst,
+#theme-badge.theme-success-burst {
+  box-shadow: var(--elevation-theme-halo);
+  animation: theme-badge-burst 900ms ease-out;
+}
+
+@keyframes theme-badge-burst {
+  0% { transform: scale(0.9); filter: brightness(1.4); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); filter: none; }
+}
+
+.theme-success-graphic {
+  position: fixed;
+  inset: 0;
+  z-index: 950;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--color-bg-peat) 45%, transparent);
+}
+
+.theme-success-graphic.is-on {
+  display: flex;
+  animation: theme-success-fade 1100ms ease-out forwards;
+}
+
+.theme-success-ring {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 3px solid var(--color-theme-bubble-cyan);
+  box-shadow: var(--elevation-theme-halo);
+  background:
+    radial-gradient(circle at 50% 55%, var(--color-theme-tub-water) 0 42%, transparent 43%),
+    radial-gradient(circle at 50% 50%, var(--color-theme-tub-rim) 0 58%, transparent 59%);
+}
+
+.theme-success-label {
+  margin-top: var(--space-12);
+  font-family: var(--font-ui);
+  letter-spacing: 0.14em;
+  color: var(--color-theme-badge-fg);
+  font-size: var(--text-size-14);
+}
+
+@keyframes theme-success-fade {
+  0% { opacity: 0; }
+  15% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-code-status.is-success-flash,
+  .theme-badge.theme-success-burst,
+  #theme-badge.theme-success-burst,
+  .theme-success-graphic.is-on {
+    animation: none;
   }
 }
