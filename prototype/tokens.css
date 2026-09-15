@@ -1,0 +1,76 @@
+/* Dewgrid design tokens — night botanic greenhouse over living copper-green circuitry.
+   Component styles live in styles.css; this file is tokens only. */
+
+:root {
+  /* —— Color: backgrounds —— */
+  --color-bg-peat: #06140F;
+  --color-bg-canopy: #0C2418;
+  --color-bg-panel: #102C1CEE;
+  --color-bg-tunnel: #04110C;
+
+  /* —— Color: foreground (contrast vs peat #06140F) —— */
+  --color-fg-dew: #E7FFF4;          /* contrastRatio: 17.95 */
+  --color-fg-muted: #9BBAA8;        /* contrastRatio: 8.96 */
+
+  /* —— Color: accents (contrast vs peat) —— */
+  --color-accent-circuit: #2FE6A4;  /* contrastRatio: 11.64 (peat-on-circuit also 11.64) */
+  --color-accent-sap: #F4D35E;      /* contrastRatio: 12.85 */
+  --color-accent-sunburst: #FF8A3D; /* contrastRatio: 8.03 */
+
+  /* —— Color: entities —— */
+  --color-player-leaf: #9DFF7A;     /* contrastRatio: 15.27 */
+  --color-enemy-seek: #FF5A73;      /* contrastRatio: 6.25 */
+  --color-enemy-weave: #5EC8FF;     /* contrastRatio: 10.03 */
+  --color-enemy-nest: #C084FC;      /* contrastRatio: 7.13 */
+  --color-enemy-dart: #FFCC4D;      /* contrastRatio: 12.56 */
+
+  /* —— Color: structure —— */
+  --color-wall-trace: #1E5A3E;
+  --color-wall-moss: #0A2A1C;
+  --color-copper: #B87333;          /* sparingly — traces, not body text */
+
+  /* —— Typography —— */
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-ui: "Spline Sans Mono", ui-monospace, "Cascadia Code", monospace;
+  --font-weight-display: 600;
+
+  --text-size-12: 12px;
+  --text-size-14: 14px;
+  --text-size-16: 16px;
+  --text-size-20: 20px;
+  --text-size-28: 28px;
+  --text-size-40: 40px;
+  --text-size-56: 56px;
+
+  --letter-spacing-wordmark: 0.14em;
+
+  /* —— Space —— */
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-48: 48px;
+
+  /* —— Radius —— */
+  --radius-chip: 2px;
+  --radius-panel: 10px;
+  --radius-pill: 999px;
+
+  /* —— Elevation (inner moss glow + circuit halo; no generic card drop-shadow) —— */
+  --elevation-moss-inner: inset 0 0 28px color-mix(in srgb, var(--color-accent-circuit) 18%, transparent),
+                          inset 0 1px 0 color-mix(in srgb, var(--color-fg-dew) 8%, transparent);
+  --elevation-circuit-halo: 0 0 0 1px var(--color-wall-trace),
+                            0 0 22px color-mix(in srgb, var(--color-accent-circuit) 35%, transparent);
+  --elevation-circuit-halo-bright: 0 0 0 1px var(--color-accent-circuit),
+                                   0 0 32px color-mix(in srgb, var(--color-accent-circuit) 55%, transparent);
+
+  /* —— Motion —— */
+  --motion-pulse-duration: 2400ms;
+  --motion-pulse-easing: ease-in-out;
+  --motion-drip-duration: 6000ms;
+  --motion-drip-easing: linear;
+  --motion-bob-duration: 1600ms;
+  --motion-bob-easing: ease-in-out;
+}
