@@ -1,1 +1,135 @@
-PLACEHOLDER_WILL_REPLACE
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Dewgrid — Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Spline+Sans+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="tokens.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- 1. Attract -->
+    <section id="attract" class="screen active" aria-label="Attract mode">
+      <div class="attract-canvas" aria-hidden="true">
+        <div class="attract-dot" style="top:18%;left:8%;animation-delay:0s"></div>
+        <div class="attract-dot" style="top:52%;left:4%;animation-delay:1.8s;animation-duration:7s"></div>
+        <div class="attract-dot" style="top:30%;left:0;animation-delay:3.2s;animation-duration:5.5s"></div>
+        <div class="attract-dot" style="top:70%;left:12%;animation-delay:0.9s;animation-duration:8s"></div>
+        <div class="rootling-tease"></div>
+      </div>
+      <h1 class="wordmark">DEWGRID</h1>
+      <p class="tagline">Wet silicon · Dew as current</p>
+      <p>A night botanic greenhouse grown over living copper-green circuitry</p>
+      <button type="button" class="btn primary" data-go="title">Insert Curiosity</button>
+    </section>
+
+    <!-- 2. Title + story -->
+    <section id="title" class="screen" aria-label="Title">
+      <div class="panel">
+        <h1 class="wordmark" style="font-size:var(--text-size-40)">DEWGRID</h1>
+        <h2>Rootling awakens</h2>
+        <p class="story">Deep in the dew-wet circuits, a leafy node named Rootling stirs.
+          Sap-sparks pulse through living traces. Four signal-wardens patrol the grid.
+          Harvest the glow. Survive the chase. When a Sunburst flares, turn the hunt around.</p>
+        <div class="btn-row">
+          <button type="button" class="btn" data-go="attract">Back</button>
+          <button type="button" class="btn" data-go="howto">How to Play</button>
+          <button type="button" class="btn primary" data-go="game" data-start>Enter Grid</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. How to play -->
+    <section id="howto" class="screen" aria-label="How to play">
+      <div class="panel">
+        <h2>How to Play</h2>
+        <p>Move with <strong>Arrow keys</strong> or <strong>WASD</strong>. On touch devices, use the pad.</p>
+        <p>Collect all <strong class="sap-label">sap-sparks</strong>. Grab a <strong class="sun-label">Sunburst</strong> to briefly reverse the chase.</p>
+        <p>Side tunnels wrap left and right. Pause with <strong>P</strong> or Esc.</p>
+        <ul class="enemy-list">
+          <li><span class="swatch seek" aria-hidden="true"></span><span><b class="seek-label">Seek</b> locks onto Rootling's last known cell.</span></li>
+          <li><span class="swatch weave" aria-hidden="true"></span><span><b class="weave-label">Weave</b> zigzags lanes, prefers turns.</span></li>
+          <li><span class="swatch nest" aria-hidden="true"></span><span><b class="nest-label">Nest</b> circles a home node, then bursts out.</span></li>
+          <li><span class="swatch dart" aria-hidden="true"></span><span><b class="dart-label">Dart</b> rushes corridors, rarely turns mid-run.</span></li>
+        </ul>
+        <div class="btn-row">
+          <button type="button" class="btn" data-go="title">Back</button>
+          <button type="button" class="btn primary" data-go="game" data-start>Play</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Gameplay -->
+    <section id="game" class="screen" aria-label="Gameplay">
+      <div class="hud">
+        <span>SCORE <b id="score">0</b></span>
+        <span>WAVE <b id="wave">1</b></span>
+        <span>LIVES <b id="lives">3</b></span>
+      </div>
+      <canvas id="maze" width="448" height="416" aria-label="Dewgrid maze"></canvas>
+      <div class="touch-pad" aria-label="Touch controls">
+        <button type="button" class="btn u" data-dir="U">▲</button>
+        <button type="button" class="btn l" data-dir="L">◀</button>
+        <button type="button" class="btn r" data-dir="R">▶</button>
+        <button type="button" class="btn d" data-dir="D">▼</button>
+      </div>
+      <div class="btn-row">
+        <button type="button" class="btn" id="btn-pause">Pause</button>
+        <button type="button" class="btn" data-go="title">Quit</button>
+      </div>
+    </section>
+
+    <!-- 5. Level transition -->
+    <section id="levelup" class="screen" aria-label="Level clear">
+      <div class="panel">
+        <h2>Wave Cleared</h2>
+        <p>Sap-sparks rewoven. The garden deepens…</p>
+        <p>Next wave: <b id="next-wave">2</b></p>
+        <button type="button" class="btn primary" id="btn-next-wave">Continue</button>
+      </div>
+    </section>
+
+    <!-- 6. Life lost -->
+    <section id="lifelost" class="screen" aria-label="Life lost">
+      <div class="panel">
+        <h2 class="seek-label">Signal Severed</h2>
+        <p>Rootling fritzes, but the node still holds.</p>
+        <p>Lives remaining: <b id="lives-left">2</b></p>
+        <button type="button" class="btn primary" id="btn-retry">Reboot Node</button>
+      </div>
+    </section>
+
+    <!-- 7. Game over + HS -->
+    <section id="gameover" class="screen" aria-label="Game over">
+      <div class="panel">
+        <h2>Grid Darkened</h2>
+        <p>Final score: <b id="final-score">0</b></p>
+        <p class="hs-board" id="hs-display"></p>
+        <label for="hs-name">Tag (3 letters)</label>
+        <input id="hs-name" maxlength="3" value="RTG" autocomplete="off" spellcheck="false" />
+        <div class="btn-row">
+          <button type="button" class="btn primary" id="btn-save-hs">Save High Score</button>
+          <button type="button" class="btn" data-go="title" data-start>Title</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Pause overlay -->
+    <div id="pause" class="overlay" aria-label="Paused">
+      <div class="panel">
+        <h2>Paused</h2>
+        <p>Garden holds its breath.</p>
+        <div class="btn-row">
+          <button type="button" class="btn primary" id="btn-resume">Resume</button>
+          <button type="button" class="btn" data-go="title">Quit to Title</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
