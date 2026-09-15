@@ -1,9 +1,10 @@
-/* Dewgrid R8h — boot + soft/hard + next-wave. */
+/* Dewgrid R8h / U8 — boot + soft/hard + next-wave + theme unlock run hook. */
 (function () {
   var S = window.Screens;
   if (!S) return;
 
   window.Input.bind();
+  /* Bind forms early; start-run callback registered after goTo (order fix). */
   if (window.Theme && window.Theme.bind) window.Theme.bind();
   if (window.Scores) {
     window.Scores.bind();
@@ -26,6 +27,23 @@
     S.show(id);
     if (id === "game") startGameSession();
     if ((id === "scores" || id === "title") && window.Scores) window.Scores.refresh();
+  }
+
+  /* U8: after first HOTTUBTONY unlock cutscene → hard-reset game session. */
+  window.__dewStartThemeRun = function () {
+    if (window.Loop) window.Loop.stop();
+    S.show("game");
+    startGameSession();
+  };
+  window.GameFlow = {
+    start: window.__dewStartThemeRun
+  };
+  if (window.Theme) {
+    if (window.Theme.setStartRun) {
+      window.Theme.setStartRun(window.__dewStartThemeRun);
+    } else if (window.Theme.setOnUnlock) {
+      window.Theme.setOnUnlock(window.__dewStartThemeRun);
+    }
   }
 
   S.show("attract");

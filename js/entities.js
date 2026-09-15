@@ -1,4 +1,4 @@
-/* Dewgrid R8k — collect/power/collide + arcade-tight turn buffer. */
+/* Dewgrid R8k/U8 — collect/power/collide; sun = power only. */
 (function (w) {
   var cells = null, level = null, player = null, enemies = [];
   var score = 0, lives = 3, wave = 1, power = 0, lastEvent = null;
@@ -47,20 +47,6 @@
       if (s.x !== player.x || s.y !== player.y) continue;
       if (s.kind === "sun") {
         score += 50; power = POWER_TICKS; fx("sun");
-        if (w.Theme && w.Theme.isUnlocked() && w.ThemeCutscene && w.ThemeCutscene.play) {
-          var focusEl = (w.document && w.document.getElementById("btn-pause")) ||
-            (w.document && w.document.getElementById("maze"));
-          if (w.Loop && w.Loop.stop) w.Loop.stop();
-          w.ThemeCutscene.play(focusEl, {
-            onDone: function () {
-              if (w.Screens && w.Screens.getScreen() === "game" &&
-                  !(w.Screens.isPaused && w.Screens.isPaused()) &&
-                  w.Loop && w.Loop.start) {
-                w.Loop.start();
-              }
-            }
-          });
-        }
       } else { score += 10; fx("sap"); }
       sparks.splice(i, 1);
     }
@@ -80,7 +66,6 @@
     if (!player || !cells) return;
     var M = w.Maze;
     var ndx = player.ndx, ndy = player.ndy;
-    /* Buffered intent: reverse + perpendicular apply at first open cell. */
     if ((ndx || ndy) && M.canWalk(cells, player.x + ndx, player.y + ndy)) {
       player.dx = ndx;
       player.dy = ndy;
@@ -89,11 +74,7 @@
       if (M.canWalk(cells, player.x + player.dx, player.y + player.dy)) {
         player.x = M.wrapX(player.x + player.dx);
         player.y = player.y + player.dy;
-      } else {
-        /* Stop on wall; keep ndx/ndy so a pending turn still applies next tick. */
-        player.dx = 0;
-        player.dy = 0;
-      }
+      } else { player.dx = 0; player.dy = 0; }
     }
   }
 
@@ -125,7 +106,6 @@
     if (!I || !player) return;
     var intent = I.peek ? I.peek() : I.getIntent();
     if (!(intent.dx || intent.dy)) return;
-    /* Same-as-travel intent must not wipe a pending perpendicular buffer. */
     var pendingTurn = (player.ndx || player.ndy) &&
       (player.ndx !== player.dx || player.ndy !== player.dy);
     var sameTravel = intent.dx === player.dx && intent.dy === player.dy;
@@ -146,20 +126,7 @@
     applyCollision();
   }
 
-  function clearLastEvent() {
-    var e = lastEvent; lastEvent = null; return e;
-  }
-  function getLastEvent() { return lastEvent; }
-  function setPower(n) { power = n | 0; }
-  function getEnemies() { return enemies; }
-  function getPlayer() { return player; }
-  function getLevel() { return level; }
-  function getScore() { return score; }
-  function getLives() { return lives; }
-  function getWave() { return wave; }
-  function bumpWave() { wave++; }
-  function isPowered() { return power > 0; }
-  function getPower() { return power; }
+  function clearLastEvent() { var e = lastEvent; lastEvent = null; return e; }
   function getState() {
     return { player: player, level: level, enemies: enemies, cells: cells };
   }
@@ -167,10 +134,13 @@
   w.Entities = {
     createPlayer: createPlayer, reset: reset, setIntent: setIntent,
     tryPlayerMove: tryPlayerMove, step: step, collect: collect,
-    applyCollision: applyCollision, getLastEvent: getLastEvent,
-    clearLastEvent: clearLastEvent, getPlayer: getPlayer, getLevel: getLevel,
-    getScore: getScore, getLives: getLives, getWave: getWave, bumpWave: bumpWave,
-    isPowered: isPowered, getPower: getPower, setPower: setPower,
-    getEnemies: getEnemies, getState: getState
+    applyCollision: applyCollision,
+    getLastEvent: function () { return lastEvent; },
+    clearLastEvent: clearLastEvent, getPlayer: function () { return player; },
+    getLevel: function () { return level; }, getScore: function () { return score; },
+    getLives: function () { return lives; }, getWave: function () { return wave; },
+    bumpWave: function () { wave++; }, isPowered: function () { return power > 0; },
+    getPower: function () { return power; }, setPower: function (n) { power = n | 0; },
+    getEnemies: function () { return enemies; }, getState: getState
   };
 })(window);
