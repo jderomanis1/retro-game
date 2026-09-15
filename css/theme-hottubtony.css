@@ -1,0 +1,183 @@
+/* HOTTUBTONY theme accents + code UI + cutscene (production subset). */
+
+:root {
+  --color-theme-steam-rose: #FF8CAA;
+  --color-theme-bubble-cyan: #78E6FF;
+  --color-theme-tub-water: #14465A;
+  --color-theme-tub-rim: #1E5A3E;
+  --color-theme-badge-bg: color-mix(in srgb, var(--color-theme-steam-rose) 18%, var(--color-bg-canopy));
+  --color-theme-badge-fg: #E7FFF4;
+  --color-theme-status-ok: var(--color-accent-circuit);
+  --color-theme-status-fail: var(--color-error);
+  --elevation-theme-halo:
+    0 0 0 1px color-mix(in srgb, var(--color-theme-bubble-cyan) 55%, var(--color-wall-trace)),
+    0 0 24px color-mix(in srgb, var(--color-theme-steam-rose) 35%, transparent);
+}
+
+.theme-code-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+  align-items: flex-end;
+  margin: var(--space-8) 0;
+  justify-content: center;
+  width: 100%;
+  max-width: 28rem;
+}
+
+.theme-code-field {
+  flex: 1 1 160px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  text-align: left;
+}
+
+.theme-code-field label {
+  font-size: var(--text-size-12);
+  color: var(--color-fg-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+#theme-code,
+.theme-code-input {
+  min-height: var(--size-tap-min);
+  padding: var(--space-8) var(--space-12);
+  background: var(--color-bg-tunnel);
+  border: 1px solid var(--color-wall-trace);
+  border-radius: var(--radius-chip);
+  color: var(--color-fg-dew);
+  font-family: var(--font-ui);
+  font-size: var(--text-size-16);
+  letter-spacing: 0.08em;
+  width: 100%;
+}
+
+#theme-code:focus,
+.theme-code-input:focus {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+  border-color: var(--color-theme-bubble-cyan);
+}
+
+#btn-theme-unlock,
+.btn-theme-unlock {
+  min-height: var(--size-tap-min);
+  min-width: var(--size-tap-min);
+  padding: var(--space-8) var(--space-16);
+  background: color-mix(in srgb, var(--color-theme-steam-rose) 22%, var(--color-bg-canopy));
+  border: 1px solid var(--color-theme-steam-rose);
+  border-radius: var(--radius-chip);
+  color: var(--color-fg-dew);
+  font-family: var(--font-ui);
+  font-size: var(--text-size-14);
+  cursor: pointer;
+  letter-spacing: 0.04em;
+}
+
+#btn-theme-unlock:focus,
+.btn-theme-unlock:focus {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+#theme-code-status,
+.theme-code-status {
+  min-height: 1.4em;
+  font-size: var(--text-size-14);
+  margin: 0 0 var(--space-8);
+  width: 100%;
+  max-width: 28rem;
+  text-align: center;
+}
+
+#theme-code-status.is-fail,
+.theme-code-status.is-fail {
+  color: var(--color-theme-status-fail);
+}
+
+#theme-code-status.is-ok,
+.theme-code-status.is-ok {
+  color: var(--color-theme-status-ok);
+}
+
+#theme-badge,
+.theme-badge,
+#hud-theme-badge {
+  display: none;
+  width: fit-content;
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-12);
+  background: var(--color-theme-badge-bg);
+  color: var(--color-theme-badge-fg);
+  border: 1px solid var(--color-theme-bubble-cyan);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-ui);
+  font-size: var(--text-size-12);
+  letter-spacing: 0.12em;
+}
+
+#theme-badge[data-active="true"],
+#theme-badge.is-active,
+.theme-badge[data-active="true"],
+.theme-badge.is-active,
+#hud-theme-badge[data-active="true"],
+#hud-theme-badge.is-active {
+  display: inline-block;
+}
+
+#hud-theme-badge {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  padding: 2px 8px;
+}
+
+.hud #hud-theme-badge.is-active {
+  display: inline-block;
+}
+
+#cutscene {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--color-bg-peat) 78%, transparent);
+  opacity: 0;
+  transition: opacity 200ms ease-out;
+}
+
+#cutscene.is-open {
+  display: flex;
+  opacity: 1;
+}
+
+#cutscene.is-fading {
+  opacity: 0;
+}
+
+#cutscene .cutscene-stage {
+  width: min(420px, 92vw);
+  height: min(280px, 50vh);
+  background: var(--color-bg-tunnel);
+  border: 1px solid var(--color-theme-steam-rose);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--elevation-theme-halo);
+  overflow: hidden;
+  position: relative;
+}
+
+#cutscene canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #cutscene {
+    transition: none;
+  }
+}

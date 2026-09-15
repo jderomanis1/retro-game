@@ -44,7 +44,9 @@
     if (!running) return;
     animId = requestAnimationFrame(frame);
     var S = w.Screens;
-    if (!S || S.getScreen() !== "game" || S.isPaused()) {
+    var cutPlaying = w.ThemeCutscene && w.ThemeCutscene.isPlaying &&
+      w.ThemeCutscene.isPlaying();
+    if (!S || S.getScreen() !== "game" || S.isPaused() || cutPlaying) {
       lastTs = ts;
       return;
     }
@@ -84,7 +86,10 @@
   function isRunning() { return running; }
 
   function isFrozen() {
-    return !!(w.Screens && w.Screens.isPaused && w.Screens.isPaused());
+    var paused = !!(w.Screens && w.Screens.isPaused && w.Screens.isPaused());
+    var cut = !!(w.ThemeCutscene && w.ThemeCutscene.isPlaying &&
+      w.ThemeCutscene.isPlaying());
+    return paused || cut;
   }
 
   w.Loop = { start: start, stop: stop, isRunning: isRunning, isFrozen: isFrozen };

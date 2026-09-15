@@ -5,9 +5,11 @@
   var POWER_TICKS = 180;
   var COLORS = { Seek: "#FF5A73", Weave: "#5EC8FF", Nest: "#C084FC", Dart: "#FFCC4D" };
   function fx(n) { var s = w.Sfx; if (s && s[n]) s[n](); }
+
   function createPlayer() {
     return { x: 10, y: 23, dx: 0, dy: 0, ndx: 0, ndy: 0 };
   }
+
   function spawnEnemies() {
     var hints = w.Maze.getSpawnHints().nests;
     var homes = hints.length >= 4 ? hints.slice(0, 4) : [
@@ -20,11 +22,13 @@
         color: COLORS[id], home: { x: h.x, y: h.y }, t: 0, zig: 1 };
     });
   }
+
   function updateHud() {
     if (!w.document || !w.document.getElementById) return;
     var d = w.document, m = { score: score, lives: lives, wave: wave, "lives-left": lives }, k, el;
     for (k in m) { el = d.getElementById(k); if (el) el.textContent = String(m[k]); }
   }
+
   function reset(lvl, opts) {
     level = lvl; cells = lvl.cells;
     if (!(opts && opts.preserveProgress)) { score = 0; lives = 3; wave = 1; }
@@ -34,14 +38,30 @@
     w.__sparkCount = level.sparks.length;
     updateHud();
   }
+
   function collect() {
     if (!level || !player) return;
     var sparks = level.sparks, i, s;
     for (i = sparks.length - 1; i >= 0; i--) {
       s = sparks[i];
       if (s.x !== player.x || s.y !== player.y) continue;
-      if (s.kind === "sun") { score += 50; power = POWER_TICKS; fx("sun"); }
-      else { score += 10; fx("sap"); }
+      if (s.kind === "sun") {
+        score += 50; power = POWER_TICKS; fx("sun");
+        if (w.Theme && w.Theme.isUnlocked() && w.ThemeCutscene && w.ThemeCutscene.play) {
+          var focusEl = (w.document && w.document.getElementById("btn-pause")) ||
+            (w.document && w.document.getElementById("maze"));
+          if (w.Loop && w.Loop.stop) w.Loop.stop();
+          w.ThemeCutscene.play(focusEl, {
+            onDone: function () {
+              if (w.Screens && w.Screens.getScreen() === "game" &&
+                  !(w.Screens.isPaused && w.Screens.isPaused()) &&
+                  w.Loop && w.Loop.start) {
+                w.Loop.start();
+              }
+            }
+          });
+        }
+      } else { score += 10; fx("sap"); }
       sparks.splice(i, 1);
     }
     w.__sparkCount = sparks.length;
@@ -50,33 +70,33 @@
     }
     updateHud();
   }
+
   function setIntent(dx, dy) {
     if (!player) return;
     player.ndx = dx; player.ndy = dy;
   }
+
   function tryPlayerMove() {
     if (!player || !cells) return;
     var M = w.Maze;
-    var wx = player.ndx, wy = player.ndy;
-    if ((wx || wy) && M.canWalk(cells, player.x + wx, player.y + wy)) {
-      player.dx = wx; player.dy = wy;
+    var ndx = player.ndx, ndy = player.ndy;
+    /* Buffered intent: reverse + perpendicular apply at first open cell. */
+    if ((ndx || ndy) && M.canWalk(cells, player.x + ndx, player.y + ndy)) {
+      player.dx = ndx;
+      player.dy = ndy;
     }
-    if (!(player.dx || player.dy)) return;
-    if (M.canWalk(cells, player.x + player.dx, player.y + player.dy)) {
-      player.x = M.wrapX(player.x + player.dx);
-      player.y = player.y + player.dy;
-      return;
-    }
-    if ((wx || wy) && M.canWalk(cells, player.x + wx, player.y + wy)) {
-      player.dx = wx; player.dy = wy;
-      player.x = M.wrapX(player.x + player.dx);
-      player.y = player.y + player.dy;
-    } else {
-      /* Stop on wall; keep ndx/ndy so a pending turn still applies next tick. */
-      player.dx = 0;
-      player.dy = 0;
+    if (player.dx || player.dy) {
+      if (M.canWalk(cells, player.x + player.dx, player.y + player.dy)) {
+        player.x = M.wrapX(player.x + player.dx);
+        player.y = player.y + player.dy;
+      } else {
+        /* Stop on wall; keep ndx/ndy so a pending turn still applies next tick. */
+        player.dx = 0;
+        player.dy = 0;
+      }
     }
   }
+
   function applyCollision() {
     if (!player) return null;
     var i, e;
@@ -99,6 +119,7 @@
     }
     return lastEvent;
   }
+
   function syncIntentFromInput() {
     var I = w.Input;
     if (!I || !player) return;
@@ -112,6 +133,7 @@
     player.ndx = intent.dx;
     player.ndy = intent.dy;
   }
+
   function step() {
     if (!player) return;
     syncIntentFromInput();
@@ -123,6 +145,7 @@
     if (w.AI) enemies.forEach(function (e) { w.AI.stepEnemy(e, ctx); });
     applyCollision();
   }
+
   function clearLastEvent() {
     var e = lastEvent; lastEvent = null; return e;
   }
@@ -140,6 +163,7 @@
   function getState() {
     return { player: player, level: level, enemies: enemies, cells: cells };
   }
+
   w.Entities = {
     createPlayer: createPlayer, reset: reset, setIntent: setIntent,
     tryPlayerMove: tryPlayerMove, step: step, collect: collect,
