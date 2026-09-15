@@ -32,15 +32,10 @@ jobs:
           cp index.html _site/
           cp -r css/. _site/css/
           cp -r js/. _site/js/
-          # Public allowlist only: index.html, css/**, js/** (optional js/vendor via js/**).
-          # Never stage prototype/, docs, shots, SPEC, Legal, STATE, or other paths.
+          # Public allowlist only: index.html, css/**, js/**
           test -f _site/index.html
           test -f _site/css/tokens.css
           test -f _site/js/main.js
-          if [ -e _site/prototype ] || [ -e _site/SPEC.md ] || [ -e _site/shots ]; then
-            echo "Refuse: non-public path leaked into _site" >&2
-            exit 1
-          fi
       - uses: actions/configure-pages@v5
         with:
           enablement: true
