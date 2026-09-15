@@ -283,7 +283,7 @@ strong {
   animation: dew-drip var(--motion-drip-duration) var(--motion-drip-easing) infinite;
 }
 
-.rootling-tease {
+.dewnode-tease {
   position: absolute;
   left: 42%;
   top: 44%;
@@ -399,7 +399,7 @@ input#hs-name:focus {
 @media (prefers-reduced-motion: reduce) {
   .wordmark,
   .attract-dot,
-  .rootling-tease {
+  .dewnode-tease {
     animation: none;
   }
 
