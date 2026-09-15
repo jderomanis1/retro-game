@@ -1,0 +1,410 @@
+/* Dewgrid — component + screen styles. Tokens only from tokens.css. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  background: var(--color-bg-peat);
+  color: var(--color-fg-dew);
+  font-family: var(--font-ui);
+  font-size: var(--text-size-14);
+  overflow: hidden;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, color-mix(in srgb, var(--color-accent-circuit) 12%, transparent), transparent 60%),
+    linear-gradient(160deg, transparent 40%, color-mix(in srgb, var(--color-copper) 8%, transparent) 70%, transparent 90%),
+    var(--color-bg-peat);
+}
+
+#app {
+  max-width: 640px;
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* —— Screens —— */
+.screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: var(--space-24);
+  text-align: center;
+  gap: var(--space-12);
+}
+
+.screen.active {
+  display: flex;
+}
+
+.panel {
+  background: var(--color-bg-panel);
+  border: 1px solid var(--color-wall-trace);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--elevation-moss-inner), var(--elevation-circuit-halo);
+  padding: var(--space-24) var(--space-32);
+  max-width: 28rem;
+  width: 100%;
+}
+
+/* —— Type —— */
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-display);
+  font-size: var(--text-size-56);
+  letter-spacing: var(--letter-spacing-wordmark);
+  color: var(--color-accent-circuit);
+  text-shadow: 0 0 28px color-mix(in srgb, var(--color-accent-circuit) 55%, transparent);
+  animation: sap-pulse var(--motion-pulse-duration) var(--motion-pulse-easing) infinite;
+  line-height: 1.1;
+}
+
+h1:not(.wordmark) {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-display);
+  font-size: var(--text-size-40);
+  letter-spacing: 0.06em;
+  color: var(--color-accent-circuit);
+}
+
+h2 {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-display);
+  font-size: var(--text-size-28);
+  color: var(--color-accent-sap);
+  letter-spacing: 0.04em;
+}
+
+p,
+li,
+label {
+  color: var(--color-fg-muted);
+  line-height: 1.5;
+  font-size: var(--text-size-14);
+}
+
+.story {
+  max-width: 28rem;
+  color: var(--color-fg-dew);
+  font-size: var(--text-size-14);
+}
+
+strong {
+  color: var(--color-fg-dew);
+  font-weight: 600;
+}
+
+.tagline {
+  font-size: var(--text-size-12);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+}
+
+/* —— Buttons —— */
+.btn {
+  appearance: none;
+  border: 1px solid var(--color-wall-trace);
+  background: var(--color-bg-canopy);
+  color: var(--color-accent-circuit);
+  padding: var(--space-12) var(--space-24);
+  font-family: var(--font-ui);
+  font-size: var(--text-size-14);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  border-radius: var(--radius-pill);
+  box-shadow: var(--elevation-circuit-halo);
+  transition: box-shadow 0.2s ease, filter 0.2s ease, transform 0.1s ease;
+}
+
+.btn:hover,
+.btn:focus-visible {
+  box-shadow: var(--elevation-circuit-halo-bright);
+  filter: brightness(1.08);
+  outline: none;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn.primary {
+  background: var(--color-accent-circuit);
+  color: var(--color-bg-peat);
+  border-color: var(--color-accent-circuit);
+  font-weight: 600;
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+  justify-content: center;
+  margin-top: var(--space-8);
+}
+
+/* —— HUD —— */
+.hud {
+  width: 100%;
+  max-width: 448px;
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-accent-sap);
+  font-size: var(--text-size-12);
+  letter-spacing: 0.08em;
+  padding: var(--space-4) var(--space-8);
+}
+
+.hud b {
+  color: var(--color-fg-dew);
+  font-weight: 600;
+  font-size: var(--text-size-16);
+}
+
+/* —— Canvas —— */
+#maze {
+  background: var(--color-bg-tunnel);
+  border: 1px solid var(--color-wall-trace);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--elevation-moss-inner), var(--elevation-circuit-halo);
+  image-rendering: auto;
+  max-width: 100%;
+  touch-action: none;
+}
+
+/* —— How-to enemy swatches —— */
+.enemy-list {
+  list-style: none;
+  text-align: left;
+  max-width: 26rem;
+  width: 100%;
+  margin: var(--space-8) 0;
+}
+
+.enemy-list li {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: var(--space-12);
+  align-items: start;
+  margin: var(--space-8) 0;
+  color: var(--color-fg-dew);
+  font-size: var(--text-size-14);
+}
+
+.swatch {
+  width: 22px;
+  height: 22px;
+  margin-top: 2px;
+  border-radius: var(--radius-chip);
+}
+
+.swatch.seek {
+  background: var(--color-enemy-seek);
+  border-radius: 4px;
+}
+
+.swatch.weave {
+  background: var(--color-enemy-weave);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  border-radius: 0;
+}
+
+.swatch.nest {
+  background: var(--color-enemy-nest);
+  border-radius: 50%;
+}
+
+.swatch.dart {
+  background: var(--color-enemy-dart);
+  clip-path: polygon(0 40%, 70% 40%, 70% 0, 100% 50%, 70% 100%, 70% 60%, 0 60%);
+  border-radius: 0;
+}
+
+.seek-label { color: var(--color-enemy-seek); }
+.weave-label { color: var(--color-enemy-weave); }
+.nest-label { color: var(--color-enemy-nest); }
+.dart-label { color: var(--color-enemy-dart); }
+.sap-label { color: var(--color-accent-sap); }
+.sun-label { color: var(--color-accent-sunburst); }
+
+/* —— Attract —— */
+.attract-canvas {
+  width: min(360px, 90vw);
+  height: 180px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--color-copper) 18%, transparent) 0%, transparent 40%),
+    linear-gradient(225deg, color-mix(in srgb, var(--color-copper) 12%, transparent) 10%, transparent 45%),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 47px,
+      color-mix(in srgb, var(--color-copper) 22%, transparent) 48px,
+      transparent 49px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 35px,
+      color-mix(in srgb, var(--color-wall-trace) 40%, transparent) 36px,
+      transparent 37px
+    ),
+    var(--color-bg-canopy);
+  border: 1px solid var(--color-wall-trace);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--elevation-moss-inner), var(--elevation-circuit-halo);
+  position: relative;
+  overflow: hidden;
+}
+
+.attract-dot {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-accent-sap);
+  box-shadow: 0 0 10px var(--color-accent-sap);
+  animation: dew-drip var(--motion-drip-duration) var(--motion-drip-easing) infinite;
+}
+
+.rootling-tease {
+  position: absolute;
+  left: 42%;
+  top: 44%;
+  width: 22px;
+  height: 22px;
+  background: var(--color-player-leaf);
+  clip-path: polygon(50% 0, 100% 35%, 80% 100%, 20% 100%, 0 35%);
+  filter: drop-shadow(0 0 8px var(--color-player-leaf));
+  animation: leaf-bob var(--motion-bob-duration) var(--motion-bob-easing) infinite;
+}
+
+/* —— Overlay —— */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--color-bg-peat) 82%, transparent);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-12);
+  z-index: 10;
+  backdrop-filter: blur(3px);
+}
+
+.overlay.active {
+  display: flex;
+}
+
+.overlay .panel {
+  max-width: 20rem;
+}
+
+/* —— High score —— */
+input#hs-name {
+  background: var(--color-bg-canopy);
+  border: 1px solid var(--color-wall-trace);
+  color: var(--color-fg-dew);
+  padding: var(--space-8) var(--space-12);
+  font-family: var(--font-ui);
+  font-size: var(--text-size-16);
+  letter-spacing: 0.2em;
+  text-align: center;
+  text-transform: uppercase;
+  width: 8rem;
+  border-radius: var(--radius-chip);
+  box-shadow: var(--elevation-moss-inner);
+}
+
+input#hs-name:focus {
+  outline: none;
+  box-shadow: var(--elevation-circuit-halo-bright);
+}
+
+.hs-board {
+  color: var(--color-accent-sap);
+  font-size: var(--text-size-14);
+  min-height: 1.2em;
+  font-family: var(--font-ui);
+}
+
+/* —— Touch pad —— */
+.touch-pad {
+  display: none;
+  grid-template-columns: repeat(3, 48px);
+  grid-template-rows: repeat(3, 48px);
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+}
+
+.touch-pad .btn {
+  padding: 0;
+  width: 48px;
+  height: 48px;
+  font-size: var(--text-size-16);
+  border-radius: var(--radius-chip);
+}
+
+.touch-pad .u { grid-column: 2; grid-row: 1; }
+.touch-pad .l { grid-column: 1; grid-row: 2; }
+.touch-pad .r { grid-column: 3; grid-row: 2; }
+.touch-pad .d { grid-column: 2; grid-row: 3; }
+
+@media (pointer: coarse) {
+  .touch-pad { display: grid; }
+}
+
+/* —— Motion —— */
+@keyframes sap-pulse {
+  0%, 100% {
+    opacity: 1;
+    filter: brightness(1);
+    text-shadow: 0 0 28px color-mix(in srgb, var(--color-accent-circuit) 55%, transparent);
+  }
+  50% {
+    opacity: 0.88;
+    filter: brightness(1.15);
+    text-shadow: 0 0 40px color-mix(in srgb, var(--color-accent-circuit) 75%, transparent);
+  }
+}
+
+@keyframes dew-drip {
+  0% { transform: translate(0, 20px); opacity: 0.2; }
+  15% { opacity: 0.95; }
+  100% { transform: translate(300px, 120px); opacity: 0.15; }
+}
+
+@keyframes leaf-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wordmark,
+  .attract-dot,
+  .rootling-tease {
+    animation: none;
+  }
+
+  .wordmark {
+    opacity: 1;
+    filter: none;
+  }
+}
