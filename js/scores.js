@@ -18,7 +18,7 @@
   function clean(list) {
     return list.map(normalize).filter(Boolean).sort(function (a, b) {
       return b.score - a.score;
-    }).slice(0, 10);
+    }).slice(0, 3);
   }
 
   function load() {
