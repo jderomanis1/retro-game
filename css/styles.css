@@ -1,0 +1,670 @@
+/* Dewgrid — production screen chrome. Tokens only from tokens.css.
+   No game-loop / canvas draw styles beyond #maze shell. Palette locked (no vibe re-gate). */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  /* Zoom allowed: do not lock max-scale in CSS or viewport meta. */
+}
+
+html,
+body {
+  min-height: 100%;
+  height: 100%;
+  background: var(--color-bg-peat);
+  color: var(--color-fg-dew);
+  font-family: var(--font-ui);
+  font-size: var(--text-size-14);
+  overflow-x: hidden; /* no horizontal page scroll; prefer fluid layout */
+}
+
+body {
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, color-mix(in srgb, var(--color-accent-circuit) 12%, transparent), transparent 60%),
+    linear-gradient(160deg, transparent 40%, color-mix(in srgb, var(--color-copper) 8%, transparent) 70%, transparent 90%),
+    var(--color-bg-peat);
+  /* Allow text select on form fields; avoid aggressive user-select that breaks #hs-name */
+  -webkit-tap-highlight-color: transparent;
+}
+
+#app {
+  max-width: 640px;
+  margin: 0 auto;
+  min-height: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: var(--space-8);
+  width: 100%;
+}
+
+/* —— Screens —— */
+.screen {
+  display: none; /* inactive; SE adds hidden/inert */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: var(--space-16) var(--space-8);
+  text-align: center;
+  gap: var(--space-12);
+  width: 100%;
+}
+
+.screen.active {
+  display: flex;
+}
+
+.panel {
+  background: var(--color-bg-panel);
+  border: 1px solid var(--color-wall-trace);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--elevation-moss-inner), var(--elevation-circuit-halo);
+  padding: var(--space-24) var(--space-32);
+  max-width: 28rem;
+  width: 100%;
+}
+
+/* —— Type —— */
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-display);
+  font-size: clamp(var(--text-size-40), 12vw, var(--text-size-56));
+  letter-spacing: var(--letter-spacing-wordmark);
+  color: var(--color-accent-circuit);
+  text-shadow: 0 0 28px color-mix(in srgb, var(--color-accent-circuit) 55%, transparent);
+  animation: sap-pulse var(--motion-pulse-duration) var(--motion-pulse-easing) infinite;
+  line-height: 1.1;
+}
+
+h1:not(.wordmark) {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-display);
+  font-size: var(--text-size-40);
+  letter-spacing: 0.06em;
+  color: var(--color-accent-circuit);
+}
+
+h2 {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-display);
+  font-size: var(--text-size-28);
+  color: var(--color-accent-sap);
+  letter-spacing: 0.04em;
+}
+
+p,
+li,
+label {
+  color: var(--color-fg-muted);
+  line-height: 1.5;
+  font-size: var(--text-size-14);
+}
+
+.story {
+  max-width: 28rem;
+  color: var(--color-fg-dew);
+  font-size: var(--text-size-14);
+}
+
+strong {
+  color: var(--color-fg-dew);
+  font-weight: 600;
+}
+
+.tagline {
+  font-size: var(--text-size-12);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+}
+
+/* —— Focus ring (all interactive) —— */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.btn:focus-visible,
+.touch-pad .btn:focus-visible,
+input#hs-name:focus-visible,
+button:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* —— Buttons —— */
+.btn {
+  appearance: none;
+  border: 1px solid var(--color-wall-trace);
+  background: var(--color-bg-canopy);
+  color: var(--color-accent-circuit);
+  padding: var(--space-12) var(--space-24);
+  min-height: var(--size-tap-min);
+  min-width: var(--size-tap-min);
+  font-family: var(--font-ui);
+  font-size: var(--text-size-14);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  border-radius: var(--radius-pill);
+  box-shadow: var(--elevation-circuit-halo);
+  transition: box-shadow 0.2s ease, filter 0.2s ease, transform 0.1s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.btn:hover {
+  box-shadow: var(--elevation-circuit-halo-bright);
+  filter: brightness(1.08);
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn.primary {
+  background: var(--color-accent-circuit);
+  color: var(--color-bg-peat);
+  border-color: var(--color-accent-circuit);
+  font-weight: 600;
+  min-height: var(--size-tap-min);
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+  justify-content: center;
+  align-items: center;
+  margin-top: var(--space-8);
+  width: 100%;
+}
+
+/* —— HUD —— */
+.hud {
+  width: 100%;
+  max-width: 448px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-8);
+  font-family: var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-accent-sap);
+  font-size: var(--text-size-12);
+  letter-spacing: 0.08em;
+  padding: var(--space-4) var(--space-8);
+}
+
+.hud b,
+#score,
+#wave,
+#lives {
+  color: var(--color-fg-dew);
+  font-weight: 600;
+  font-size: var(--text-size-16);
+}
+
+/* —— Canvas shell —— */
+#maze {
+  background: var(--color-bg-tunnel);
+  border: 1px solid var(--color-wall-trace);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--elevation-moss-inner), var(--elevation-circuit-halo);
+  image-rendering: auto;
+  max-width: 100%;
+  width: 100%;
+  height: auto;
+  touch-action: none;
+  display: block;
+}
+
+/* —— How-to enemy swatches —— */
+.enemy-list {
+  list-style: none;
+  text-align: left;
+  max-width: 26rem;
+  width: 100%;
+  margin: var(--space-8) 0;
+}
+
+.enemy-list li {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: var(--space-12);
+  align-items: start;
+  margin: var(--space-8) 0;
+  color: var(--color-fg-dew);
+  font-size: var(--text-size-14);
+}
+
+.swatch {
+  width: 22px;
+  height: 22px;
+  margin-top: 2px;
+  border-radius: var(--radius-chip);
+}
+
+.swatch.seek {
+  background: var(--color-enemy-seek);
+  border-radius: 4px;
+}
+
+.swatch.weave {
+  background: var(--color-enemy-weave);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  border-radius: 0;
+}
+
+.swatch.nest {
+  background: var(--color-enemy-nest);
+  border-radius: 50%;
+}
+
+.swatch.dart {
+  background: var(--color-enemy-dart);
+  clip-path: polygon(0 40%, 70% 40%, 70% 0, 100% 50%, 70% 100%, 70% 60%, 0 60%);
+  border-radius: 0;
+}
+
+.seek-label { color: var(--color-enemy-seek); }
+.weave-label { color: var(--color-enemy-weave); }
+.nest-label { color: var(--color-enemy-nest); }
+.dart-label { color: var(--color-enemy-dart); }
+.sap-label { color: var(--color-accent-sap); }
+.sun-label { color: var(--color-accent-sunburst); }
+
+/* —— Attract —— */
+.attract-canvas {
+  width: min(360px, 90vw);
+  height: 180px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--color-copper) 18%, transparent) 0%, transparent 40%),
+    linear-gradient(225deg, color-mix(in srgb, var(--color-copper) 12%, transparent) 10%, transparent 45%),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 47px,
+      color-mix(in srgb, var(--color-copper) 22%, transparent) 48px,
+      transparent 49px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 35px,
+      color-mix(in srgb, var(--color-wall-trace) 40%, transparent) 36px,
+      transparent 37px
+    ),
+    var(--color-bg-canopy);
+  border: 1px solid var(--color-wall-trace);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--elevation-moss-inner), var(--elevation-circuit-halo);
+  position: relative;
+  overflow: hidden;
+}
+
+.attract-dot {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-accent-sap);
+  box-shadow: 0 0 10px var(--color-accent-sap);
+  animation: dew-drip var(--motion-drip-duration) var(--motion-drip-easing) infinite;
+  /* Reduced decorative blink vs prototype intensity — soft glow only */
+  opacity: 0.85;
+}
+
+.dewnode-tease {
+  position: absolute;
+  left: 42%;
+  top: 44%;
+  width: 22px;
+  height: 22px;
+  background: var(--color-player-leaf);
+  clip-path: polygon(50% 0, 100% 35%, 80% 100%, 20% 100%, 0 35%);
+  filter: drop-shadow(0 0 8px var(--color-player-leaf));
+  animation: leaf-bob var(--motion-bob-duration) var(--motion-bob-easing) infinite;
+}
+
+/* —— Pause overlay: full-screen dim, panel centered, above game —— */
+#pause.overlay,
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--color-bg-peat) 82%, transparent);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-12);
+  z-index: 20;
+  backdrop-filter: blur(3px);
+  padding: var(--space-16);
+}
+
+#pause.overlay.active,
+.overlay.active {
+  display: flex;
+}
+
+#pause .panel,
+.overlay .panel {
+  max-width: 20rem;
+  margin: 0 auto;
+}
+
+/* Optional Sunburst fullscreen strobe — disabled under reduced motion */
+.sunburst-strobe {
+  animation: sunburst-flash 400ms ease-in-out 2;
+  pointer-events: none;
+}
+
+@keyframes sunburst-flash {
+  0%, 100% { background-color: transparent; }
+  50% { background-color: color-mix(in srgb, var(--color-accent-sunburst) 22%, transparent); }
+}
+
+/* —— High score —— */
+.hs-field {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-8);
+  width: 100%;
+}
+
+label[for="hs-name"] {
+  color: var(--color-fg-dew);
+  font-size: var(--text-size-14);
+}
+
+input#hs-name {
+  background: var(--color-bg-canopy);
+  border: 1px solid var(--color-wall-trace);
+  color: var(--color-fg-dew);
+  padding: var(--space-8) var(--space-12);
+  min-height: var(--size-tap-min);
+  font-family: var(--font-ui);
+  font-size: var(--text-size-16);
+  letter-spacing: 0.2em;
+  text-align: center;
+  text-transform: uppercase;
+  width: 8rem;
+  max-width: 100%;
+  border-radius: var(--radius-chip);
+  box-shadow: var(--elevation-moss-inner);
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+input#hs-name:focus-visible {
+  box-shadow: var(--elevation-circuit-halo-bright);
+}
+
+input#hs-name.is-invalid {
+  border-color: var(--color-error);
+}
+
+#hs-error {
+  display: none;
+  color: var(--color-error);
+  background: var(--color-error-bg);
+  font-size: var(--text-size-12);
+  line-height: 1.4;
+  padding: var(--space-8) var(--space-12);
+  border-radius: var(--radius-chip);
+  border: 1px solid color-mix(in srgb, var(--color-error) 40%, transparent);
+  max-width: 20rem;
+  width: 100%;
+}
+
+#hs-error.is-invalid,
+input#hs-name.is-invalid + #hs-error,
+.is-invalid #hs-error {
+  display: block;
+}
+
+.hs-board,
+#hs-display {
+  color: var(--color-accent-sap);
+  font-size: var(--text-size-14);
+  min-height: 1.2em;
+  font-family: var(--font-ui);
+}
+
+#final-score {
+  color: var(--color-fg-dew);
+  font-weight: 600;
+}
+
+#next-wave,
+#lives-left {
+  color: var(--color-fg-dew);
+  font-weight: 600;
+}
+
+/* —— Touch pad ——
+   Always in DOM (UX). Visible at max-width 768px OR pointer:coarse.
+   Still occupies flow on 375. At 1280 fine pointer: hidden visually but remains in DOM. */
+.touch-pad {
+  display: none;
+  grid-template-columns: repeat(3, var(--size-tap-min));
+  grid-template-rows: repeat(3, var(--size-tap-min));
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+  justify-content: center;
+  /* aria-label on pad buttons is SE markup — CSS cannot replace accessible names */
+}
+
+.touch-pad .btn {
+  padding: 0;
+  width: var(--size-tap-min);
+  height: var(--size-tap-min);
+  min-width: var(--size-tap-min);
+  min-height: var(--size-tap-min);
+  font-size: var(--text-size-16);
+  border-radius: var(--radius-chip);
+}
+
+.touch-pad [data-dir="U"],
+.touch-pad .u { grid-column: 2; grid-row: 1; }
+.touch-pad [data-dir="L"],
+.touch-pad .l { grid-column: 1; grid-row: 2; }
+.touch-pad [data-dir="R"],
+.touch-pad .r { grid-column: 3; grid-row: 2; }
+.touch-pad [data-dir="D"],
+.touch-pad .d { grid-column: 2; grid-row: 3; }
+
+@media (max-width: 768px), (pointer: coarse) {
+  .touch-pad {
+    display: grid;
+  }
+}
+
+/* —— Motion —— */
+@keyframes sap-pulse {
+  0%, 100% {
+    opacity: 1;
+    filter: brightness(1);
+    text-shadow: 0 0 28px color-mix(in srgb, var(--color-accent-circuit) 55%, transparent);
+  }
+  50% {
+    opacity: 0.92;
+    filter: brightness(1.08);
+    text-shadow: 0 0 36px color-mix(in srgb, var(--color-accent-circuit) 65%, transparent);
+  }
+}
+
+@keyframes dew-drip {
+  0% { transform: translate(0, 20px); opacity: 0.2; }
+  15% { opacity: 0.85; }
+  100% { transform: translate(300px, 120px); opacity: 0.15; }
+}
+
+@keyframes leaf-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+/* prefers-reduced-motion: freeze attract dots/tease; no screen fade; no sap-pulse;
+   no Sunburst fullscreen strobe. Canvas game loop stays on (SE owns rAF). */
+@media (prefers-reduced-motion: reduce) {
+  .wordmark,
+  .attract-dot,
+  .dewnode-tease,
+  .sunburst-strobe,
+  .btn,
+  .screen,
+  .overlay {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .wordmark {
+    opacity: 1;
+    filter: none;
+    text-shadow: 0 0 28px color-mix(in srgb, var(--color-accent-circuit) 55%, transparent);
+  }
+
+  .attract-dot {
+    opacity: 0.7;
+    transform: none;
+  }
+
+  .dewnode-tease {
+    transform: none;
+  }
+
+  .btn:active {
+    transform: none;
+  }
+}
+
+/* —— Responsive: 375 single column —— */
+@media (max-width: 480px) {
+  #app {
+    max-width: 100%;
+    padding: var(--space-4);
+  }
+
+  .screen {
+    padding: var(--space-12) var(--space-4);
+    justify-content: flex-start;
+  }
+
+  .panel {
+    padding: var(--space-16);
+  }
+
+  .hud {
+    max-width: 100%;
+  }
+
+  #maze {
+    max-width: 100%;
+  }
+
+  .btn-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-row .btn {
+    width: 100%;
+  }
+
+  .touch-pad {
+    display: grid;
+  }
+
+  .wordmark {
+    font-size: var(--text-size-40);
+  }
+}
+
+/* Explicit 375-class narrow phones */
+@media (max-width: 375px) {
+  #app {
+    padding: var(--space-4);
+  }
+
+  .hud {
+    font-size: 11px;
+    gap: var(--space-4);
+  }
+
+  .panel {
+    padding: var(--space-12);
+  }
+}
+
+/* —— Responsive: 768 canvas centered; pad + Pause/Quit one row if space —— */
+@media (min-width: 768px) {
+  #app {
+    max-width: 720px;
+    padding: var(--space-16);
+  }
+
+  #game.screen.active {
+    justify-content: center;
+  }
+
+  #maze {
+    max-width: 448px;
+    margin-inline: auto;
+  }
+
+  #game .game-chrome,
+  #game .btn-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-12);
+  }
+
+  /* When pad visible (coarse), keep pad + chrome on one visual band */
+  #game .touch-pad {
+    margin-top: var(--space-8);
+  }
+}
+
+/* —— Responsive: 1280 comfortable margins; canvas not forced huge —— */
+@media (min-width: 1280px) {
+  #app {
+    max-width: 800px;
+    padding: var(--space-32) var(--space-48);
+  }
+
+  #maze {
+    max-width: 448px;
+  }
+
+  /* Fine pointer desktop: pad stays in DOM but visually hidden; keyboard primary */
+  .touch-pad {
+    display: none;
+  }
+}
+
+@media (min-width: 1280px) and (pointer: coarse) {
+  .touch-pad {
+    display: grid;
+  }
+}
