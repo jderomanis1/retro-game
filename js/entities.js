@@ -1,4 +1,4 @@
-/* Dewgrid R8j — collect/power/collide + wave + sfx. */
+/* Dewgrid R8k — collect/power/collide + arcade-tight turn buffer. */
 (function (w) {
   var cells = null, level = null, player = null, enemies = [];
   var score = 0, lives = 3, wave = 1, power = 0, lastEvent = null;
@@ -72,7 +72,9 @@
       player.x = M.wrapX(player.x + player.dx);
       player.y = player.y + player.dy;
     } else {
-      player.dx = 0; player.dy = 0;
+      /* Stop on wall; keep ndx/ndy so a pending turn still applies next tick. */
+      player.dx = 0;
+      player.dy = 0;
     }
   }
   function applyCollision() {
@@ -97,13 +99,22 @@
     }
     return lastEvent;
   }
+  function syncIntentFromInput() {
+    var I = w.Input;
+    if (!I || !player) return;
+    var intent = I.peek ? I.peek() : I.getIntent();
+    if (!(intent.dx || intent.dy)) return;
+    /* Same-as-travel intent must not wipe a pending perpendicular buffer. */
+    var pendingTurn = (player.ndx || player.ndy) &&
+      (player.ndx !== player.dx || player.ndy !== player.dy);
+    var sameTravel = intent.dx === player.dx && intent.dy === player.dy;
+    if (pendingTurn && sameTravel) return;
+    player.ndx = intent.dx;
+    player.ndy = intent.dy;
+  }
   function step() {
     if (!player) return;
-    var I = w.Input;
-    if (I) {
-      var intent = I.peek ? I.peek() : I.getIntent();
-      if (intent.dx || intent.dy) { player.ndx = intent.dx; player.ndy = intent.dy; }
-    }
+    syncIntentFromInput();
     tryPlayerMove();
     collect();
     if (lastEvent === "levelup") return;
