@@ -1,0 +1,40 @@
+name: Deploy GitHub Pages
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Stage public site only
+        run: |
+          mkdir -p _site
+          # prototype and game files staged later; keep workflow valid
+          if [ -f index.html ]; then cp index.html _site/; fi
+          if [ -d dist ]; then cp -r dist/* _site/; fi
+          if [ -d prototype ] && [ ! -f index.html ]; then cp -r prototype/* _site/; fi
+          # ensure non-empty artifact
+          if [ ! -f _site/index.html ]; then printf '%s\n' '<!DOCTYPE html><title>Dewgrid</title><p>Deploy pending</p>' > _site/index.html; fi
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4
