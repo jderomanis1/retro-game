@@ -24,6 +24,7 @@
     if (id !== "game") window.Loop.stop();
     S.show(id);
     if (id === "game") startGameSession();
+    if ((id === "scores" || id === "title") && window.Scores) window.Scores.refresh();
   }
 
   S.show("attract");
