@@ -2,4 +2,4 @@
 
 Original arcade maze-chase game (Solution Delivery Team, Full lane).
 
-Public site assets only will ship to GitHub Pages. Working name pending vibe approval.
+Play: production site on GitHub Pages from `main` (public assets: `index.html`, `css/`, `js/` only).
