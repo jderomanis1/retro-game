@@ -47,13 +47,20 @@
     return { ok: true, list: list };
   }
 
-  function render(list) {
-    var el = w.document && w.document.getElementById("hs-display");
-    if (!el) return;
-    list = list || load();
-    el.textContent = list.length ? list.map(function (item) {
+  function boardText(list) {
+    return list.length ? list.map(function (item) {
       return item.name + " " + item.score;
     }).join(" / ") : EMPTY;
+  }
+
+  function render(list) {
+    if (!w.document) return;
+    list = list || load();
+    var text = boardText(list);
+    ["hs-display", "scores-board"].forEach(function (id) {
+      var el = w.document.getElementById(id);
+      if (el) el.textContent = text;
+    });
   }
 
   function showError(on) {
