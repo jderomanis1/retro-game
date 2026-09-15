@@ -66,6 +66,28 @@
     } catch (e) {}
   }
 
+  function unlock() {
+    if (!canPlay()) return;
+    beep(523.25, 0.09, "triangle");
+    try {
+      var c = ensureCtx();
+      if (!c) return;
+      var t0 = c.currentTime;
+      [[783.99, 0.09, 0.12, "triangle"], [1046.5, 0.18, 0.16, "sine"]].forEach(function (row) {
+        var o = c.createOscillator(), g = c.createGain(), t = t0 + row[1];
+        o.type = row[3];
+        o.frequency.value = row[0];
+        g.gain.value = 0.04;
+        o.connect(g);
+        g.connect(c.destination);
+        g.gain.setValueAtTime(0.04, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + row[2]);
+        o.start(t);
+        o.stop(t + row[2] + 0.02);
+      });
+    } catch (e) {}
+  }
+
   function stopNodes() {
     if (!amb) return;
     try {
@@ -106,7 +128,7 @@
     setMuted: setMuted, isMuted: isMuted,
     setPausedGate: setPausedGate, isPausedGate: isPausedGate,
     canPlay: canPlay, ensureCtx: ensureCtx, beep: beep,
-    sap: sap, sun: sun, hit: hit, wave: wave, eat: eat,
+    sap: sap, sun: sun, hit: hit, wave: wave, eat: eat, unlock: unlock,
     startAmbient: startAmbient, stopAmbient: stopAmbient
   };
 })(window);
