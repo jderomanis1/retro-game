@@ -1,7 +1,7 @@
 /* Dewgrid R8a — screen router. No game loop. */
 (function (w) {
   var SCREEN_IDS = [
-    "attract", "title", "howto", "game",
+    "attract", "title", "howto", "scores", "game",
     "levelup", "lifelost", "gameover", "pause"
   ];
 
@@ -12,6 +12,7 @@
     attract: '[data-go="title"].primary, [data-go="title"]',
     title: '[data-start].primary, [data-start]',
     howto: '[data-go="game"].primary, [data-go="game"]',
+    scores: '[data-go="title"].primary, [data-go="title"]',
     game: "#btn-pause",
     levelup: "#btn-next-wave",
     lifelost: "#btn-retry",
